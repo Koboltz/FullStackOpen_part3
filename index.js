@@ -1,15 +1,15 @@
 // Modules required
-require('dotenv').config();
-const express = require('express');
-const app = express();
-const morgan = require('morgan');
+require('dotenv').config()
+const express = require('express')
+const app = express()
+const morgan = require('morgan')
 const cors = require('cors')
-const Person = require('./models/person');
+const Person = require('./models/person')
 
 // Middleware
 app.use(express.json())
-morgan.token('req-body', (req, res) => {
-    return JSON.stringify(req.body);
+morgan.token('req-body', (req) => {
+    return JSON.stringify(req.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 app.use(cors())
@@ -24,37 +24,36 @@ app.get('/api/persons', (req, res) => {
         })
         .catch((err) => {
             res.status(500).json({
-                error: 'Server Error'
+                error: err.message
             })
         })
 })
 
 app.get('/info', (req, res) => {
-    let total;
     Person.find({}).then(result => {
         console.log(result)
-        const date = new Date();
+        const date = new Date()
         res.send(`Phonebook has info for ${result.length} people <br /><br /> ${date}`)
-    });
+    })
    
    
     
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
-    const id = req.params.id;
+    const id = req.params.id
     Person.findById(id).then(result => {
         res.json(result)
     })
-    .catch(error => next(error))
+        .catch(error => next(error))
 
 })
 
 // DELETE requests
 app.delete('/api/persons/:id', (req, res, next) => {
-    const id = req.params.id;
+    const id = req.params.id
     Person.findByIdAndRemove(id)
-        .then(result => {
+        .then(() => {
             res.status(204)
         })
         .catch(error => next(error))
@@ -63,7 +62,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 // POST requests
 app.post('/api/persons', (req, res, next) => {
 
-    const body = req.body;
+    const body = req.body
 
     const person =  new Person({
         name: body.name,
@@ -83,7 +82,7 @@ app.post('/api/persons', (req, res, next) => {
 
 // PUT requests
 app.put('/api/persons/:id', (req, res, next) => {
-    const body = req.body;
+    const body = req.body
 
     const person = {
         name: body.name,
@@ -129,7 +128,7 @@ app.use(errorHandler)
 
 
 // Event listener
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`)
